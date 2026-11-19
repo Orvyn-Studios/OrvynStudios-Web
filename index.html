@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
   <a class="skip" href="#main">Saltar al contenido</a>
@@ -153,10 +153,50 @@
         <p class="eyebrow reveal">Principios</p>
         <h2 class="title reveal">Cómo hacemos las cosas</h2>
       </header>
-      <div class="grid-3">
-        <div class="card reveal"><span class="card-num">01</span><h3>Tu equipo, tus datos</h3><p>Lo que analizamos se queda en tu PC. Sin cuentas, sin anuncios y sin enviar nada a ningún servidor.</p></div>
-        <div class="card reveal"><span class="card-num">02</span><h3>Nada sin avisar</h3><p>Antes de cambiar algo te enseñamos el valor actual y el nuevo. Y siempre hay un botón para volver atrás.</p></div>
-        <div class="card reveal"><span class="card-num">03</span><h3>Honestidad técnica</h3><p>No inventamos puntuaciones ni prometemos FPS. Si algo está bien, te lo decimos y no tocamos nada.</p></div>
+      <div class="principles">
+        <article class="pcard reveal">
+          <div class="pdemo pdemo-local" aria-hidden="true">
+            <div class="pc-box"><span class="pc-screen"></span><span class="pc-base"></span></div>
+            <div class="pc-scan"></div>
+            <ul class="pc-reads"><li>Procesador</li><li>Memoria</li><li>Discos</li><li>Inicio</li></ul>
+            <div class="pc-wall"><span class="pc-cloud">Internet</span><span class="pc-x"></span></div>
+          </div>
+          <span class="card-num">01</span>
+          <h3>Tu equipo, tus datos</h3>
+          <p>Lo que analizamos se queda en tu PC. Sin cuentas, sin anuncios y sin enviar nada a ningún servidor.</p>
+        </article>
+        <article class="pcard pcard-wide reveal">
+          <div class="pdemo pdemo-change" id="pdemo-change">
+            <div class="chg-row">
+              <span class="chg-name">Animaciones de Windows</span>
+              <span class="chg-vals"><s class="chg-old">Activadas</s><span class="chg-arrow">→</span><b class="chg-new">Reducidas</b></span>
+            </div>
+            <div class="chg-row">
+              <span class="chg-name">Apps en segundo plano</span>
+              <span class="chg-vals"><s class="chg-old">Permitidas</s><span class="chg-arrow">→</span><b class="chg-new">Limitadas</b></span>
+            </div>
+            <div class="chg-foot">
+              <span class="chg-status" aria-live="polite"><i></i><span>Aplicado · guardado en Historial</span></span>
+              <button class="chg-undo" type="button">Deshacer</button>
+            </div>
+          </div>
+          <span class="card-num">02</span>
+          <h3>Nada sin avisar</h3>
+          <p>Antes de cambiar algo te enseñamos el valor actual y el nuevo. Y siempre hay un botón para volver atrás. Pruébalo.</p>
+        </article>
+        <article class="pcard reveal">
+          <div class="pdemo pdemo-honest" aria-hidden="true">
+            <div class="hn-card">
+              <div class="hn-head"><span>Procesador</span><em>Normal</em></div>
+              <div class="hn-val"><b data-count="25">0</b><small>%</small></div>
+              <div class="hn-bar"><i></i></div>
+            </div>
+            <p class="hn-msg"><span class="hn-dot"></span>Está bien. No hace falta tocar nada.</p>
+          </div>
+          <span class="card-num">03</span>
+          <h3>Honestidad técnica</h3>
+          <p>No inventamos puntuaciones ni prometemos FPS. Si algo está bien, te lo decimos y no tocamos nada.</p>
+        </article>
       </div>
     </section>
 
@@ -181,6 +221,6 @@
     <span class="footer-links"><a href="privacidad/staroptimizer/">Privacidad de StarOptimizer</a> · <a href="https://github.com/Orvyn-Studios" target="_blank" rel="noopener">GitHub</a></span>
   </footer>
 
-  <script src="main.js?v=6" defer></script>
+  <script src="main.js?v=7" defer></script>
 </body>
 </html>

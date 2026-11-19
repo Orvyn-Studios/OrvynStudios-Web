@@ -260,6 +260,69 @@ html.has-cursor, html.has-cursor a, html.has-cursor button { cursor: none; }
   .hero-nova { transform: none; opacity: 1; }
 }
 
+
+/* ============ Principles: each one shown, not told ============ */
+.principles { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 18px; }
+.pcard { position: relative; display: flex; flex-direction: column; padding: 18px 18px 30px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); transition: border-color .3s, transform .5s var(--spring); }
+.pcard:hover { border-color: var(--line-strong); transform: translateY(-4px); }
+.pcard .card-num { margin: 22px 10px 0; }
+.pcard h3 { margin: 12px 10px 10px; font: 600 22px/1.2 var(--display); }
+.pcard p { margin: 0 10px; color: var(--muted); }
+.pdemo { position: relative; height: 210px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg-2); overflow: hidden; }
+
+/* 01: reads stay inside the PC; the line to Internet is cut. */
+.pc-box { position: absolute; left: 22px; top: 50%; translate: 0 -50%; display: grid; justify-items: center; gap: 4px; }
+.pc-screen { width: 74px; height: 50px; border-radius: 6px; border: 1.5px solid var(--line-strong); background: var(--surface); position: relative; overflow: hidden; }
+.pc-screen::after { content: ''; position: absolute; left: 10px; right: 10px; top: 12px; height: 4px; border-radius: 2px; background: var(--accent); box-shadow: 0 9px 0 var(--line-strong), 0 18px 0 var(--line-strong); }
+.pc-base { width: 34px; height: 4px; border-radius: 2px; background: var(--line-strong); }
+.pc-scan { position: absolute; left: 22px; top: calc(50% - 30px); width: 74px; height: 2px; background: var(--accent); opacity: .7; animation: pcscan 2.4s ease-in-out infinite; }
+@keyframes pcscan { 50% { translate: 0 46px; } }
+.pc-reads { position: absolute; left: 112px; top: 50%; translate: 0 -50%; margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+.pc-reads li { display: flex; align-items: center; gap: 6px; opacity: 0; animation: pcread 4.8s infinite; }
+.pc-reads li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--good); }
+.pc-reads li:nth-child(2) { animation-delay: .3s; } .pc-reads li:nth-child(3) { animation-delay: .6s; } .pc-reads li:nth-child(4) { animation-delay: .9s; }
+@keyframes pcread { 0% { opacity: 0; translate: -6px 0; } 12%, 80% { opacity: 1; translate: 0 0; } 100% { opacity: 0; } }
+.pc-wall { position: absolute; right: 16px; top: 50%; translate: 0 -50%; display: grid; justify-items: center; gap: 10px; }
+.pc-cloud { padding: 6px 10px; border: 1px dashed var(--line-strong); border-radius: 999px; font-size: 11px; color: var(--faint); }
+.pc-x { position: relative; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line-strong); }
+.pc-x::before, .pc-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 1.5px; margin: -.75px 0 0 -5px; background: var(--muted); rotate: 45deg; }
+.pc-x::after { rotate: -45deg; }
+
+/* 02: a real before/after with a working undo. */
+.pdemo-change { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 18px; }
+.chg-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 13px; }
+.chg-name { color: var(--secondary); }
+.chg-vals { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.chg-old { color: var(--faint); text-decoration-color: var(--faint); transition: color .3s; }
+.chg-arrow { color: var(--faint); transition: opacity .3s, translate .4s var(--spring); }
+.chg-new { color: var(--accent); font-weight: 600; transition: opacity .3s, translate .4s var(--spring); }
+.chg-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.chg-status { display: inline-flex; align-items: center; gap: 8px; }
+.chg-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--good); transition: background-color .3s; }
+.chg-undo { height: 32px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--raised); color: var(--text); font: 600 12px/1 var(--font); cursor: pointer; transition: border-color .2s, transform .3s var(--spring); }
+.chg-undo:hover { border-color: var(--accent-line); }
+.chg-undo:active { transform: scale(.95); }
+.pdemo-change.undone .chg-old { color: var(--text); text-decoration: none; }
+.pdemo-change.undone .chg-arrow, .pdemo-change.undone .chg-new { opacity: 0; translate: 8px 0; }
+.pdemo-change.undone .chg-status i { background: var(--faint); }
+.pdemo-change .chg-row:nth-child(2) .chg-new, .pdemo-change .chg-row:nth-child(2) .chg-old { transition-delay: .06s; }
+
+/* 03: a real-looking reading that says "it's fine". */
+.pdemo-honest { display: grid; align-content: center; gap: 14px; padding: 18px; }
+.hn-card { padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.hn-head { display: flex; justify-content: space-between; font-size: 13px; color: var(--secondary); }
+.hn-head em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; color: var(--good); background: #3ecf8e17; }
+.hn-val { margin: 8px 0 10px; font: 600 28px/1 var(--display); font-variant-numeric: tabular-nums; }
+.hn-val small { margin-left: 4px; font-size: 13px; color: var(--muted); }
+.hn-bar { height: 4px; border-radius: 2px; background: var(--line-strong); overflow: hidden; }
+.hn-bar i { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--good); transition: width 1.4s var(--ease) .2s; }
+.in .hn-bar i { width: 25%; }
+.hn-msg { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: var(--muted); }
+.hn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+
+@media (max-width: 900px) { .principles { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .pc-reads li { opacity: 1; } .hn-bar i { width: 25%; } }
+
 /* ============ Responsive ============ */
 /* ============ StarOptimizer showcase (sticky scroll) ============ */
 .showcase { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(32px, 5vw, 72px); margin-top: 28px; }

@@ -238,4 +238,26 @@
       cta.style.setProperty('--gx', `${e.clientX - r.left}px`); cta.style.setProperty('--gy', `${e.clientY - r.top}px`);
     });
   }
+
+  /* Principle 02: the undo actually undoes (and can be re-applied). */
+  const chg = document.getElementById('pdemo-change');
+  if (chg) {
+    const btn = chg.querySelector('.chg-undo'), status = chg.querySelector('.chg-status span');
+    btn.addEventListener('click', () => {
+      const undone = chg.classList.toggle('undone');
+      btn.textContent = undone ? 'Volver a aplicar' : 'Deshacer';
+      status.textContent = undone ? 'Restaurado · valores originales' : 'Aplicado · guardado en Historial';
+    });
+  }
+  /* Principle 03: count the reading up when it comes into view. */
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const to = +el.dataset.count;
+    if (reduce) { el.textContent = to; return; }
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting) return; o.disconnect();
+      const t0 = performance.now();
+      const step = t => { const k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }, { threshold: .6 }).observe(el);
+  });
 })();
