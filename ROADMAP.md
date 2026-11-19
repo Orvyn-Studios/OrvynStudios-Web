@@ -18,7 +18,7 @@ Seguimiento general en el issue #1.
 ## Pendiente
 
 ### Contenido
-- [ ] **Página de privacidad de StarOptimizer** (`/privacidad/staroptimizer/`). El texto está en `docs/PRIVACY.md` del repo de StarOptimizer. Microsoft Store puede pedir una URL, así que tiene prioridad.
+- [x] **Página de privacidad de StarOptimizer** (`/privacidad/staroptimizer/`). El texto está en `docs/PRIVACY.md` del repo de StarOptimizer. Microsoft Store puede pedir una URL, así que tiene prioridad.
 - [ ] Enlace a Microsoft Store en StarOptimizer cuando se publique (insignia oficial «Get it from Microsoft»).
 - [ ] Sección **Estudio**: quiénes somos, historia breve y equipo, con foto o avatar si se quiere. Ahora solo hay un CTA de relleno.
 - [ ] Contacto real: email de soporte o formulario. **No** usar emails personales.
