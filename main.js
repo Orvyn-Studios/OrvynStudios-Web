@@ -17,42 +17,6 @@
   }), { threshold: .15, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* Aurora background: a few soft colour blobs drifting on a canvas. */
-  const canvas = document.getElementById('aurora');
-  const ctx = canvas.getContext('2d');
-  const blobs = [
-    { h: 248, s: .55, r: .55, x: .2, y: .2, sx: .00011, sy: .00007 },
-    { h: 222, s: .45, r: .5, x: .8, y: .3, sx: .00008, sy: .00012 },
-    { h: 276, s: .35, r: .45, x: .5, y: .9, sx: .0001, sy: .00009 }
-  ];
-  let w = 0, h = 0, dpr = 1, raf = 0;
-  function size() {
-    dpr = Math.min(devicePixelRatio || 1, 1.5);
-    // Rendered at a quarter of the resolution: blobs are blurry anyway, and it stays cheap.
-    w = canvas.width = Math.ceil(innerWidth * dpr / 4);
-    h = canvas.height = Math.ceil(innerHeight * dpr / 4);
-  }
-  function draw(t) {
-    ctx.clearRect(0, 0, w, h);
-    ctx.globalCompositeOperation = 'lighter';
-    for (const b of blobs) {
-      const x = (b.x + Math.sin(t * b.sx) * .18) * w;
-      const y = (b.y + Math.cos(t * b.sy) * .14) * h - scrollY * .05 / 4;
-      const r = b.r * Math.max(w, h);
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `hsla(${b.h}, 90%, 62%, ${b.s * .35})`);
-      g.addColorStop(1, 'hsla(0,0%,0%,0)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-    }
-    if (!reduce) raf = requestAnimationFrame(draw);
-  }
-  size(); addEventListener('resize', size);
-  raf = requestAnimationFrame(draw);
-  document.addEventListener('visibilitychange', () => {
-    cancelAnimationFrame(raf);
-    if (!document.hidden) raf = requestAnimationFrame(draw);
-  });
-
   /* Nova: eyes follow the pointer, body tilts slightly. */
   const nova = document.getElementById('nova');
   if (nova && fine && !reduce) {
