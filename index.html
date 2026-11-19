@@ -3,27 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Orvyn Studios — Software para Windows, bien hecho</title>
+  <title>Orvyn Studios — Software para Windows: StarOptimizer y Nivo</title>
   <meta name="description" content="Orvyn Studios crea software para Windows cuidado al detalle: StarOptimizer, el optimizador que explica antes de cambiar nada, y Nivo, una isla dinámica para tu escritorio.">
-  <meta name="theme-color" content="#07070d">
+  <meta name="theme-color" content="#0a0c13">
+  <meta name="google-site-verification" content="cRZAhZK5Jxo11Uko2Xb7IbsUQtKGu_rpvSemgWemuCk">
   <meta property="og:title" content="Orvyn Studios">
+  <meta property="og:site_name" content="Orvyn Studios">
   <meta property="og:description" content="Software para Windows, bien hecho.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://orvyn-studios.github.io/OrvynStudios-Web/">
+  <meta property="og:image" content="https://orvyn-studios.github.io/OrvynStudios-Web/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="es_ES">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://orvyn-studios.github.io/OrvynStudios-Web/#org", "name": "Orvyn Studios", "alternateName": "Orvyn", "url": "https://orvyn-studios.github.io/OrvynStudios-Web/", "logo": "https://orvyn-studios.github.io/OrvynStudios-Web/assets/img/apple-touch-icon.png", "sameAs": ["https://github.com/Orvyn-Studios"]}, {"@type": "WebSite", "@id": "https://orvyn-studios.github.io/OrvynStudios-Web/#web", "name": "Orvyn Studios", "url": "https://orvyn-studios.github.io/OrvynStudios-Web/", "inLanguage": "es", "publisher": {"@id": "https://orvyn-studios.github.io/OrvynStudios-Web/#org"}}, {"@type": "SoftwareApplication", "name": "StarOptimizer", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Windows 10, Windows 11", "softwareVersion": "2.1.0", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "downloadUrl": "https://github.com/Orvyn-Studios/StarOptimizer/releases/latest", "publisher": {"@id": "https://orvyn-studios.github.io/OrvynStudios-Web/#org"}}]}</script>
+  <link rel="canonical" href="https://orvyn-studios.github.io/OrvynStudios-Web/">
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <a class="skip" href="#main">Saltar al contenido</a>
-  <canvas id="aurora" aria-hidden="true"></canvas>
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="pl-nova"><span></span><span></span></div>
+    <div class="pl-word">Orvyn<span>Studios</span></div>
+  </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span></div>
+  
   <div class="grain" aria-hidden="true"></div>
 
   <header class="nav" id="nav">
     <a class="brand" href="#top" aria-label="Orvyn Studios, inicio">
-      <span class="brand-mark" aria-hidden="true"></span>Orvyn<span class="brand-thin">Studios</span>
+      <img class="brand-mark" src="assets/img/apple-touch-icon.png" alt="" width="28" height="28">Orvyn<span class="brand-thin">Studios</span>
     </a>
     <nav aria-label="Principal">
       <a href="#productos">Productos</a>
@@ -44,20 +60,32 @@
         </h1>
         <p class="lead reveal">Diseñamos herramientas para Windows que respetan tu equipo y tu tiempo: claras, rápidas y sin letra pequeña.</p>
         <div class="hero-cta reveal">
-          <a class="btn btn-primary" href="#productos">Ver productos</a>
-          <a class="btn btn-ghost" href="#principios">Cómo trabajamos</a>
+          <a class="btn btn-primary btn-lg" data-magnetic href="https://github.com/Orvyn-Studios/StarOptimizer/releases/latest" target="_blank" rel="noopener"><svg class="btn-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0 4-4m-4 4-4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Descargar StarOptimizer</a>
+          <a class="btn btn-ghost btn-lg" data-magnetic href="#productos">Ver productos</a>
         </div>
+        <p class="hero-note reveal"><span class="live-dot"></span>Gratis · Versión 2.1 · Windows 10/11 · Sin telemetría</p>
       </div>
-      <div class="hero-nova" aria-hidden="true">
-        <div class="nova" id="nova">
-          <div class="nova-ring"></div>
-          <div class="nova-body">
-            <div class="nova-eyes"><span class="eye"><i></i></span><span class="eye"><i></i></span></div>
-          </div>
+      <div class="hero-nova">
+        <div class="nova-space" id="nova-space">
+          <button class="nova-button" id="nova" type="button" aria-label="Nova, la mascota de StarOptimizer. Púlsala.">
+            <span class="mascot">
+              <span class="face">
+                <span class="eyes"><span class="eye"><span class="iris"></span><span class="nova-lid"></span></span><span class="eye"><span class="iris"></span><span class="nova-lid"></span></span></span>
+              </span>
+            </span>
+          </button>
+          <span class="nova-shadow" aria-hidden="true"></span>
         </div>
       </div>
       <a class="scroll-hint" href="#productos" aria-label="Bajar a productos"><span></span></a>
     </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Sin telemetría</span><b>✦</b><span>Todo reversible</span><b>✦</b><span>Hecho para Windows</span><b>✦</b><span>Sin anuncios</span><b>✦</b><span>Nada sin avisar</span><b>✦</b>
+        <span>Sin telemetría</span><b>✦</b><span>Todo reversible</span><b>✦</b><span>Hecho para Windows</span><b>✦</b><span>Sin anuncios</span><b>✦</b><span>Nada sin avisar</span><b>✦</b>
+      </div>
+    </div>
 
     <!-- PRODUCTS -->
     <section class="section" id="productos">
@@ -77,7 +105,10 @@
             <li>Ajustes reversibles con historial</li>
             <li>Limpieza de espacio revisada por ti</li>
           </ul>
-          <a class="btn btn-ghost" href="https://github.com/Orvyn-Studios/StarOptimizer" target="_blank" rel="noopener">Ver en GitHub</a>
+          <div class="product-cta">
+            <a class="btn btn-primary" data-magnetic href="https://github.com/Orvyn-Studios/StarOptimizer/releases/latest" target="_blank" rel="noopener"><svg class="btn-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0 4-4m-4 4-4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Descargar 2.1</a>
+            <a class="btn btn-ghost" data-magnetic href="https://github.com/Orvyn-Studios/StarOptimizer" target="_blank" rel="noopener">Código en GitHub</a>
+          </div>
         </div>
         <div class="product-visual tilt" data-tilt>
           <div class="window">
@@ -87,12 +118,32 @@
         </div>
       </article>
 
+      <div class="showcase" id="showcase">
+        <div class="showcase-sticky">
+          <div class="window showcase-window">
+            <div class="window-bar"><i></i><i></i><i></i></div>
+            <div class="showcase-screens">
+              <img class="active" data-step="0" src="assets/img/so-inicio-oscuro.webp" alt="StarOptimizer: pantalla de inicio con el estado del equipo" width="1920" height="1080" loading="lazy">
+              <img data-step="1" src="assets/img/so-plan.webp" alt="StarOptimizer: plan de ajustes propuesto" width="1920" height="1080" loading="lazy">
+              <img data-step="2" src="assets/img/so-limpieza.webp" alt="StarOptimizer: limpieza de espacio por categorías" width="1920" height="1080" loading="lazy">
+            </div>
+          </div>
+          <div class="showcase-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
+        </div>
+        <ol class="showcase-steps">
+          <li class="active" data-step="0"><img class="step-shot" src="assets/img/so-inicio-oscuro.webp" alt="StarOptimizer: pantalla de inicio" width="1920" height="1080" loading="lazy"><span class="step-num">01</span><h4>Mira cómo está tu PC</h4><p>Procesador, memoria, discos y lo que se abre al iniciar, leído directamente de Windows y en tu equipo.</p></li>
+          <li data-step="1"><img class="step-shot" src="assets/img/so-plan.webp" alt="StarOptimizer: plan de ajustes" width="1920" height="1080" loading="lazy"><span class="step-num">02</span><h4>Un plan que entiendes</h4><p>Cada ajuste dice qué cambia y por qué. Tú eliges cuáles aplicar, y todos se pueden deshacer desde Historial.</p></li>
+          <li data-step="2"><img class="step-shot" src="assets/img/so-limpieza.webp" alt="StarOptimizer: limpieza de espacio" width="1920" height="1080" loading="lazy"><span class="step-num">03</span><h4>Libera espacio sin sustos</h4><p>Temporales, cachés y papelera agrupados por categoría. Ves cuánto ocupa cada cosa antes de borrar nada.</p></li>
+        </ol>
+      </div>
+
       <article class="product product-alt reveal" id="nivo">
         <div class="product-copy">
           <span class="product-icon product-icon-nivo" aria-hidden="true"></span>
           <h3>Nivo</h3>
           <p class="tag">En desarrollo</p>
           <p>Una isla dinámica para el escritorio de Windows: música, temporizadores y avisos en una pastilla que cambia de forma con lo que está pasando.</p>
+          <a class="btn btn-ghost" data-magnetic href="https://github.com/Orvyn-Studios/nivo" target="_blank" rel="noopener">Seguir el desarrollo ↗</a>
         </div>
         <div class="product-visual">
           <div class="island-stage">
@@ -112,28 +163,74 @@
         <p class="eyebrow reveal">Principios</p>
         <h2 class="title reveal">Cómo hacemos las cosas</h2>
       </header>
-      <div class="grid-3">
-        <div class="card reveal"><span class="card-num">01</span><h3>Tu equipo, tus datos</h3><p>Lo que analizamos se queda en tu PC. Sin cuentas, sin anuncios y sin enviar nada a ningún servidor.</p></div>
-        <div class="card reveal"><span class="card-num">02</span><h3>Nada sin avisar</h3><p>Antes de cambiar algo te enseñamos el valor actual y el nuevo. Y siempre hay un botón para volver atrás.</p></div>
-        <div class="card reveal"><span class="card-num">03</span><h3>Honestidad técnica</h3><p>No inventamos puntuaciones ni prometemos FPS. Si algo está bien, te lo decimos y no tocamos nada.</p></div>
+      <div class="principles">
+        <article class="pcard reveal">
+          <div class="pdemo pdemo-local" aria-hidden="true">
+            <div class="pc-box"><span class="pc-screen"></span><span class="pc-base"></span></div>
+            <div class="pc-scan"></div>
+            <ul class="pc-reads"><li>Procesador</li><li>Memoria</li><li>Discos</li><li>Inicio</li></ul>
+            <div class="pc-wall"><span class="pc-cloud">Internet</span><span class="pc-x"></span></div>
+          </div>
+          <span class="card-num">01</span>
+          <h3>Tu equipo, tus datos</h3>
+          <p>Lo que analizamos se queda en tu PC. Sin cuentas, sin anuncios y sin enviar nada a ningún servidor.</p>
+        </article>
+        <article class="pcard pcard-wide reveal">
+          <div class="pdemo pdemo-change" id="pdemo-change">
+            <div class="chg-row">
+              <span class="chg-name">Animaciones de Windows</span>
+              <span class="chg-vals"><s class="chg-old">Activadas</s><span class="chg-arrow">→</span><b class="chg-new">Reducidas</b></span>
+            </div>
+            <div class="chg-row">
+              <span class="chg-name">Apps en segundo plano</span>
+              <span class="chg-vals"><s class="chg-old">Permitidas</s><span class="chg-arrow">→</span><b class="chg-new">Limitadas</b></span>
+            </div>
+            <div class="chg-foot">
+              <span class="chg-status" aria-live="polite"><i></i><span>Aplicado · guardado en Historial</span></span>
+              <button class="chg-undo" type="button">Deshacer</button>
+            </div>
+          </div>
+          <span class="card-num">02</span>
+          <h3>Nada sin avisar</h3>
+          <p>Antes de cambiar algo te enseñamos el valor actual y el nuevo. Y siempre hay un botón para volver atrás. Pruébalo.</p>
+        </article>
+        <article class="pcard reveal">
+          <div class="pdemo pdemo-honest" aria-hidden="true">
+            <div class="hn-card">
+              <div class="hn-head"><span>Procesador</span><em>Normal</em></div>
+              <div class="hn-val"><b data-count="25">0</b><small>%</small></div>
+              <div class="hn-bar"><i></i></div>
+            </div>
+            <p class="hn-msg"><span class="hn-dot"></span>Está bien. No hace falta tocar nada.</p>
+          </div>
+          <span class="card-num">03</span>
+          <h3>Honestidad técnica</h3>
+          <p>No inventamos puntuaciones ni prometemos FPS. Si algo está bien, te lo decimos y no tocamos nada.</p>
+        </article>
       </div>
     </section>
 
     <!-- STUDIO (placeholder: see ROADMAP.md) -->
     <section class="section" id="estudio">
-      <div class="cta reveal">
-        <h2 class="title">Orvyn Studios</h2>
-        <p class="lead">Un estudio pequeño que cuida cada píxel. Sigue lo que construimos en GitHub.</p>
-        <a class="btn btn-primary" href="https://github.com/Orvyn-Studios" target="_blank" rel="noopener">Orvyn en GitHub</a>
+      <div class="cta cta-final reveal">
+        <div class="cta-glow" aria-hidden="true"></div>
+        <p class="eyebrow">Pruébalo</p>
+        <h2 class="title">Tu PC, explicado.<br><span class="gradient">Y todo se puede deshacer.</span></h2>
+        <p class="lead">StarOptimizer es gratis y no necesita instalación. Descárgalo, mira el diagnóstico y decide tú qué cambiar.</p>
+        <div class="hero-cta cta-buttons">
+          <a class="btn btn-primary btn-lg" data-magnetic href="https://github.com/Orvyn-Studios/StarOptimizer/releases/latest" target="_blank" rel="noopener"><svg class="btn-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0 4-4m-4 4-4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Descargar StarOptimizer</a>
+          <a class="btn btn-ghost btn-lg" data-magnetic href="https://github.com/Orvyn-Studios" target="_blank" rel="noopener">Orvyn en GitHub</a>
+        </div>
       </div>
     </section>
   </main>
 
+  <div class="wordmark" aria-hidden="true">ORVYN</div>
   <footer class="footer">
     <span>© 2026 Orvyn Studios</span>
     <span class="footer-links"><a href="privacidad/staroptimizer/">Privacidad de StarOptimizer</a> · <a href="https://github.com/Orvyn-Studios" target="_blank" rel="noopener">GitHub</a></span>
   </footer>
 
-  <script src="main.js" defer></script>
+  <script src="main.js?v=10" defer></script>
 </body>
 </html>

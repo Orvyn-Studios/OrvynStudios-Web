@@ -17,61 +17,97 @@
   }), { threshold: .15, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* Aurora background: a few soft colour blobs drifting on a canvas. */
-  const canvas = document.getElementById('aurora');
-  const ctx = canvas.getContext('2d');
-  const blobs = [
-    { h: 248, s: .55, r: .55, x: .2, y: .2, sx: .00011, sy: .00007 },
-    { h: 222, s: .45, r: .5, x: .8, y: .3, sx: .00008, sy: .00012 },
-    { h: 276, s: .35, r: .45, x: .5, y: .9, sx: .0001, sy: .00009 }
-  ];
-  let w = 0, h = 0, dpr = 1, raf = 0;
-  function size() {
-    dpr = Math.min(devicePixelRatio || 1, 1.5);
-    // Rendered at a quarter of the resolution: blobs are blurry anyway, and it stays cheap.
-    w = canvas.width = Math.ceil(innerWidth * dpr / 4);
-    h = canvas.height = Math.ceil(innerHeight * dpr / 4);
-  }
-  function draw(t) {
-    ctx.clearRect(0, 0, w, h);
-    ctx.globalCompositeOperation = 'lighter';
-    for (const b of blobs) {
-      const x = (b.x + Math.sin(t * b.sx) * .18) * w;
-      const y = (b.y + Math.cos(t * b.sy) * .14) * h - scrollY * .05 / 4;
-      const r = b.r * Math.max(w, h);
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `hsla(${b.h}, 90%, 62%, ${b.s * .35})`);
-      g.addColorStop(1, 'hsla(0,0%,0%,0)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-    }
-    if (!reduce) raf = requestAnimationFrame(draw);
-  }
-  size(); addEventListener('resize', size);
-  raf = requestAnimationFrame(draw);
-  document.addEventListener('visibilitychange', () => {
-    cancelAnimationFrame(raf);
-    if (!document.hidden) raf = requestAnimationFrame(draw);
-  });
-
-  /* Nova: eyes follow the pointer, body tilts slightly. */
+  /* Nova, same behaviour as in the app: spring gaze, head follows the eyes,
+     real blinks with lids, idle glances, curious tilt, little hops, squish on click. */
   const nova = document.getElementById('nova');
-  if (nova && fine && !reduce) {
-    const eyes = nova.querySelector('.nova-eyes');
-    const body = nova.querySelector('.nova-body');
-    let pending = false, px = 0, py = 0;
-    addEventListener('pointermove', e => {
-      px = e.clientX; py = e.clientY;
-      if (pending) return; pending = true;
-      requestAnimationFrame(() => {
-        pending = false;
-        const r = nova.getBoundingClientRect();
-        const dx = Math.max(-1, Math.min(1, (px - (r.left + r.width / 2)) / (innerWidth / 2)));
-        const dy = Math.max(-1, Math.min(1, (py - (r.top + r.height / 2)) / (innerHeight / 2)));
-        eyes.style.setProperty('--ex', `${dx * 9}%`);
-        eyes.style.setProperty('--ey', `${dy * 8}%`);
-        body.style.transform = `rotateY(${dx * 12}deg) rotateX(${-dy * 10}deg)`;
+  if (nova) {
+    const space = document.getElementById('nova-space');
+    const eyes = [...nova.querySelectorAll('.eye')], lids = [...nova.querySelectorAll('.nova-lid')];
+    const face = nova.querySelector('.face'), mascot = nova.querySelector('.mascot');
+    const SPRING = 'linear(0, .22 6%, .6 14%, .9 23%, 1.05 31%, 1.1 37%, 1.08 44%, 1.03 53%, .99 64%, .99 76%, 1)';
+    const GENTLE = 'linear(0, .18 8%, .52 18%, .82 30%, .98 42%, 1.03 52%, 1.02 64%, 1)';
+    let onScreen = true, frame = 0, target = { x: 0, y: 0, m: {} }, pointerUntil = 0, lastLook = -1, blinkN = 0, lookT, blinkT;
+    const ok = () => onScreen && !document.hidden && !reduce;
+    const play = (el, k, o) => el.animate ? el.animate(k, o) : null;
+    const set = (k, v) => nova.style.setProperty(k, v);
+
+    function gaze(x, y, m = {}) {
+      target = { x, y, m };
+      if (!ok() || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        let { x, y, m } = target;
+        if (m.pointer) {
+          const r = nova.getBoundingClientRect();
+          x = Math.max(-16, Math.min(16, (x - r.left - r.width / 2) / 18));
+          y = Math.max(-10, Math.min(10, (y - r.top - r.height / 2) / 22));
+        }
+        const d = m.duration ?? 760;
+        set('--gaze-duration', `${d}ms`); set('--gaze-easing', m.easing ?? SPRING);
+        set('--gaze-x', `${x}px`); set('--gaze-y', `${y}px`);
+        set('--head-duration', `${Math.round(d * 1.45)}ms`); set('--head-easing', GENTLE);
+        set('--head-x', `${(x * .55).toFixed(2)}px`); set('--head-y', `${(y * .7 - 2).toFixed(2)}px`);
+        set('--head-turn', `${(x * .45).toFixed(2)}deg`); set('--eye-depth', `${1 + x * .005}`);
       });
-    }, { passive: true });
+    }
+    function blink(double) {
+      if (!ok()) return;
+      const duration = blinkN++ % 3 === 2 ? 720 : 360;
+      const run = () => {
+        eyes.forEach(e => play(e, [
+          { scale: '1 1', translate: '0 0', easing: 'cubic-bezier(.4,0,.7,1)' },
+          { scale: '1 .4', translate: '0 18px', offset: .36 },
+          { scale: '1 .4', translate: '0 18px', offset: .53, easing: 'cubic-bezier(.16,1,.3,1)' },
+          { scale: '1 1', translate: '0 0' }], { duration }));
+        lids.forEach(l => play(l, [
+          { transform: 'translateY(-110%)', easing: 'cubic-bezier(.4,0,.7,1)' },
+          { transform: 'translateY(-5%)', offset: .36 },
+          { transform: 'translateY(-5%)', offset: .53, easing: 'cubic-bezier(.16,1,.3,1)' },
+          { transform: 'translateY(-110%)' }], { duration }));
+      };
+      run(); if (double) setTimeout(run, duration + 120);
+    }
+    function scheduleBlink() {
+      clearTimeout(blinkT);
+      blinkT = setTimeout(() => { blink(Math.random() < .2); scheduleBlink(); }, 3200 + Math.random() * 3800);
+    }
+    const curious = () => play(face, [{ rotate: '0deg' }, { rotate: '-7deg', offset: .35 }, { rotate: '-7deg', offset: .7 }, { rotate: '0deg' }], { duration: 1500, easing: 'cubic-bezier(.45,0,.55,1)'});
+    const hop = (h = 10) => play(mascot, [
+      { translate: '0 0', scale: '1 1' }, { translate: '0 2px', scale: '1.05 .95', offset: .16 },
+      { translate: `0 -${h}px`, scale: '.97 1.04', offset: .45 }, { translate: '0 1px', scale: '1.04 .96', offset: .78 },
+      { translate: '0 0', scale: '1 1' }], { duration: 640, easing: 'cubic-bezier(.33,0,.25,1)' });
+    const looks = [
+      { x: -15, y: -4, d: 820, hold: 2250 }, { x: -10, y: 7, d: 700, hold: 1700, tilt: true },
+      { x: 12, y: -10, d: 900, hold: 2380 }, { x: 16, y: 3, d: 760, hold: 1900, hop: true },
+      { x: 5, y: 8, d: 640, hold: 1450 }, { x: 0, y: 0, d: 980, hold: 2600, tilt: true }];
+    function scheduleLook(delay = 1500) {
+      clearTimeout(lookT);
+      lookT = setTimeout(() => {
+        if (!ok()) return scheduleLook(1500);
+        if (performance.now() < pointerUntil) return scheduleLook(pointerUntil - performance.now());
+        let n; do { n = Math.floor(Math.random() * looks.length); } while (n === lastLook);
+        lastLook = n; const l = looks[n];
+        gaze(l.x, l.y, { duration: l.d });
+        if (l.tilt) curious();
+        if (l.hop && Math.random() < .6) hop(8);
+        scheduleLook(l.hold);
+      }, delay);
+    }
+    if (!reduce) {
+      if (fine) addEventListener('pointermove', e => {
+        pointerUntil = performance.now() + 3600;
+        gaze(e.clientX, e.clientY, { duration: 520, pointer: true });
+      }, { passive: true });
+      nova.addEventListener('click', () => {
+        play(mascot, [{ scale: '1 1' }, { scale: '1.09 .9', offset: .22 }, { scale: '.97 1.04', offset: .55 }, { scale: '1 1' }], { duration: 560, easing: 'cubic-bezier(.33,0,.25,1)' });
+        space.classList.add('happy'); setTimeout(() => space.classList.remove('happy'), 900);
+        setTimeout(() => { hop(14); blink(); }, 380);
+      });
+      new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(nova);
+      /* Wakes up after the preloader: a hop and a look at the visitor. */
+      setTimeout(() => { hop(10); gaze(0, 4, { duration: 600 }); }, 1300);
+      scheduleBlink(); scheduleLook(2600);
+    }
   }
 
   /* 3D tilt on product visuals. */
@@ -103,4 +139,125 @@
       else if (reduce) island.dataset.state = 'music';
     }).observe(island);
   }
+  /* StarOptimizer showcase: the step in the middle of the screen picks the screenshot. */
+  const showcase = document.getElementById('showcase');
+  if (showcase) {
+    const steps = showcase.querySelectorAll('.showcase-steps li');
+    const shots = showcase.querySelectorAll('.showcase-screens img');
+    const dots = showcase.querySelectorAll('.showcase-dots i');
+    const setStep = n => [steps, shots, dots].forEach(list =>
+      list.forEach((el, i) => el.classList.toggle('active', i === n)));
+    const sio = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) setStep(+e.target.dataset.step);
+    }), { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(s => sio.observe(s));
+  }
+
+  /* ---------- v2 motion layer ---------- */
+  const root = document.documentElement;
+
+  /* Preloader: once per session, never longer than ~1 s. */
+  const pre = document.getElementById('preloader');
+  let seen = false;
+  try { seen = sessionStorage.getItem('orvyn-pl') === '1'; sessionStorage.setItem('orvyn-pl', '1'); } catch (_) {}
+  const start = () => root.classList.add('loaded');
+  if (!pre || seen || reduce) { root.classList.add('no-preload'); start(); }
+  else {
+    let lifted = false;
+    const lift = () => { if (lifted) return; lifted = true; pre.classList.add('done'); setTimeout(start, 250); };
+    const t0 = performance.now();
+    const go = () => setTimeout(lift, Math.max(0, 750 - (performance.now() - t0)));
+    if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
+    setTimeout(lift, 1000);
+  }
+
+  /* Scroll progress + hero parallax, one rAF per frame. */
+  const bar = document.getElementById('progress');
+  let ticking = false;
+  const onFrame = () => {
+    ticking = false;
+    const max = root.scrollHeight - innerHeight;
+    bar.style.setProperty('--p', max > 0 ? (scrollY / max).toFixed(4) : 0);
+    if (!reduce && scrollY < innerHeight * 1.2) root.style.setProperty('--sy', scrollY.toFixed(0));
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onFrame); } }, { passive: true });
+  onFrame();
+
+  /* Split section titles into masked words that rise in. */
+  document.querySelectorAll('.title').forEach(t => {
+    let i = 0;
+    const walk = node => [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.append(' '); return; }
+          const w = document.createElement('span'); w.className = 'w';
+          const inner = document.createElement('span'); inner.textContent = part; inner.style.setProperty('--i', i++);
+          w.append(inner); frag.append(w);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && n.tagName !== 'BR') walk(n);
+    });
+    walk(t);
+    t.classList.add('split', 'reveal');
+    io.observe(t);
+  });
+
+  if (fine && !reduce) {
+    /* Custom cursor: dot follows exactly, ring eases behind. */
+    const cur = document.getElementById('cursor');
+    const dot = cur.querySelector('.cursor-dot'), ring = cur.querySelector('.cursor-ring');
+    root.classList.add('has-cursor');
+    let mx = -100, my = -100, rx = mx, ry = my;
+    addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px)`; }, { passive: true });
+    addEventListener('pointerdown', () => cur.classList.add('down'));
+    addEventListener('pointerup', () => cur.classList.remove('down'));
+    document.addEventListener('pointerover', e => cur.classList.toggle('hover', !!e.target.closest('a, button, [data-tilt]')));
+    document.documentElement.addEventListener('mouseleave', () => { cur.style.opacity = 0; });
+    document.documentElement.addEventListener('mouseenter', () => { cur.style.opacity = 1; });
+    (function follow() {
+      rx += (mx - rx) * .18; ry += (my - ry) * .18;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      requestAnimationFrame(follow);
+    })();
+
+    /* Magnetic buttons. */
+    document.querySelectorAll('[data-magnetic]').forEach(b => {
+      b.addEventListener('pointermove', e => {
+        const r = b.getBoundingClientRect();
+        b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .25}px, ${(e.clientY - r.top - r.height / 2) * .35}px)`;
+      });
+      b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+    });
+
+    /* Final CTA glow follows the pointer. */
+    const cta = document.querySelector('.cta-final');
+    if (cta) cta.addEventListener('pointermove', e => {
+      const r = cta.getBoundingClientRect();
+      cta.style.setProperty('--gx', `${e.clientX - r.left}px`); cta.style.setProperty('--gy', `${e.clientY - r.top}px`);
+    });
+  }
+
+  /* Principle 02: the undo actually undoes (and can be re-applied). */
+  const chg = document.getElementById('pdemo-change');
+  if (chg) {
+    const btn = chg.querySelector('.chg-undo'), status = chg.querySelector('.chg-status span');
+    btn.addEventListener('click', () => {
+      const undone = chg.classList.toggle('undone');
+      btn.textContent = undone ? 'Volver a aplicar' : 'Deshacer';
+      status.textContent = undone ? 'Restaurado · valores originales' : 'Aplicado · guardado en Historial';
+    });
+  }
+  /* Principle 03: count the reading up when it comes into view. */
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const to = +el.dataset.count;
+    if (reduce) { el.textContent = to; return; }
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting) return; o.disconnect();
+      const t0 = performance.now();
+      const step = t => { const k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }, { threshold: .6 }).observe(el);
+  });
 })();
