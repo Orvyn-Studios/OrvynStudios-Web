@@ -33,8 +33,8 @@ Seguimiento general en el issue #1.
 - [ ] Vídeo corto o GIF de StarOptimizer analizando (grabar desde la app).
 
 ### Calidad
-- [ ] Imagen Open Graph (1200×630) para que el enlace se vea bien al compartirlo.
-- [ ] `sitemap.xml`, `robots.txt` y página 404.
+- [x] Imagen Open Graph (1200×630) para que el enlace se vea bien al compartirlo.
+- [x] `sitemap.xml`, `robots.txt` y página 404.
 - [ ] Probar en Safari iOS y Firefox. Medir Lighthouse (objetivo: más de 95 en todo).
 - [ ] Alojar las fuentes en el propio sitio en vez de Google Fonts (más rápido y sin terceros).
 - [ ] Revisar contraste AA de los textos grises.
