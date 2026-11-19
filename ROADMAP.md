@@ -26,7 +26,7 @@ Seguimiento general en el issue #1.
 - [ ] Textos en inglés (versión `/en/`) y selector de idioma.
 
 ### Motion graphics
-- [ ] Escaparate de StarOptimizer con scroll fijado (*sticky*): al bajar, cambian las pantallas (Inicio → Análisis → Plan → Limpieza). Las capturas `so-plan.webp` y `so-limpieza.webp` ya están en `assets/img/`.
+- [x] Escaparate de StarOptimizer con scroll fijado (*sticky*): al bajar, cambian las pantallas (Inicio → Análisis → Plan → Limpieza). Las capturas `so-plan.webp` y `so-limpieza.webp` ya están en `assets/img/`.
 - [ ] Transición de entrada (preloader corto con Nova abriendo los ojos), sin pasar de 1 s.
 - [ ] Cursor personalizado y botones «magnéticos» (solo con puntero fino).
 - [ ] Marquesina o cinta de principios entre secciones.

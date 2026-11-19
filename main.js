@@ -103,4 +103,17 @@
       else if (reduce) island.dataset.state = 'music';
     }).observe(island);
   }
+  /* StarOptimizer showcase: the step in the middle of the screen picks the screenshot. */
+  const showcase = document.getElementById('showcase');
+  if (showcase) {
+    const steps = showcase.querySelectorAll('.showcase-steps li');
+    const shots = showcase.querySelectorAll('.showcase-screens img');
+    const dots = showcase.querySelectorAll('.showcase-dots i');
+    const setStep = n => [steps, shots, dots].forEach(list =>
+      list.forEach((el, i) => el.classList.toggle('active', i === n)));
+    const sio = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) setStep(+e.target.dataset.step);
+    }), { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(s => sio.observe(s));
+  }
 })();
