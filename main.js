@@ -33,7 +33,7 @@
         const dy = Math.max(-1, Math.min(1, (py - (r.top + r.height / 2)) / (innerHeight / 2)));
         eyes.style.setProperty('--ex', `${dx * 9}%`);
         eyes.style.setProperty('--ey', `${dy * 8}%`);
-        body.style.transform = `rotateY(${dx * 12}deg) rotateX(${-dy * 10}deg)`;
+        body.style.setProperty("--hx", `${50 - dx * 14}%`); body.style.setProperty("--hy", `${18 - dy * 10}%`);
       });
     }, { passive: true });
   }

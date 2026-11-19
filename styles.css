@@ -82,12 +82,12 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-even
 .hero-nova { display: grid; place-items: center; perspective: 900px; }
 .nova { position: relative; width: min(38vw, 420px); aspect-ratio: 1; transform-style: preserve-3d; animation: float 7s ease-in-out infinite; }
 @keyframes float { 50% { translate: 0 -16px; } }
-.nova-ring { position: absolute; inset: -6%; border-radius: 50%; border: 1px dashed var(--accent-line); animation: spin 60s linear infinite; }
+.nova-ring { display: none; }
 @keyframes spin { to { rotate: 360deg; } }
 .nova-body { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center;
-  background: radial-gradient(circle at 50% 18%, #ffffff22, transparent 32%), radial-gradient(circle at 50% 50%, #0c0b1c 55%, #05050c);
+  background: radial-gradient(circle at var(--hx, 50%) var(--hy, 18%), #ffffff22, transparent 32%), radial-gradient(circle at 50% 50%, #0c0b1c 55%, #05050c);
   box-shadow: inset 0 0 0 2px var(--accent-line), inset 0 -30px 60px #0008, 0 40px 80px -30px #000;
-  transition: transform .5s var(--ease); }
+  transition: background-position .5s var(--ease); }
 .nova-eyes { display: flex; gap: 7%; width: 66%; justify-content: center; transform: translate(var(--ex, 0), var(--ey, 0)); transition: transform .35s var(--ease); }
 .eye { position: relative; width: 44%; aspect-ratio: 1 / 1.08; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #b9c2ff, #7b7cff 60%, #6a5cf5); box-shadow: 0 0 30px #7b7cff80; transform-origin: center; animation: blink 6s infinite; }
 .eye i { position: absolute; width: 16%; height: 24%; left: 52%; top: 42%; border-radius: 50%; background: #fff; transform: rotate(18deg); }
@@ -120,7 +120,7 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-even
 .product-visual { perspective: 1200px; }
 .tilt { transform-style: preserve-3d; }
 .window { border: 1px solid var(--line-strong); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg); box-shadow: 0 40px 100px -30px #000, 0 0 0 1px #ffffff08;
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .5s var(--ease); }
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: background-position .5s var(--ease); }
 .window-bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: #ffffff06; }
 .window-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
 
