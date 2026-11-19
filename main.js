@@ -116,4 +116,90 @@
     }), { rootMargin: '-45% 0px -45% 0px' });
     steps.forEach(s => sio.observe(s));
   }
+
+  /* ---------- v2 motion layer ---------- */
+  const root = document.documentElement;
+
+  /* Preloader: once per session, never longer than ~1 s. */
+  const pre = document.getElementById('preloader');
+  let seen = false;
+  try { seen = sessionStorage.getItem('orvyn-pl') === '1'; sessionStorage.setItem('orvyn-pl', '1'); } catch (_) {}
+  const start = () => root.classList.add('loaded');
+  if (!pre || seen || reduce) { root.classList.add('no-preload'); start(); }
+  else {
+    let lifted = false;
+    const lift = () => { if (lifted) return; lifted = true; pre.classList.add('done'); setTimeout(start, 250); };
+    const t0 = performance.now();
+    const go = () => setTimeout(lift, Math.max(0, 750 - (performance.now() - t0)));
+    if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
+    setTimeout(lift, 1000);
+  }
+
+  /* Scroll progress + hero parallax, one rAF per frame. */
+  const bar = document.getElementById('progress');
+  let ticking = false;
+  const onFrame = () => {
+    ticking = false;
+    const max = root.scrollHeight - innerHeight;
+    bar.style.setProperty('--p', max > 0 ? (scrollY / max).toFixed(4) : 0);
+    if (!reduce && scrollY < innerHeight * 1.2) root.style.setProperty('--sy', scrollY.toFixed(0));
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onFrame); } }, { passive: true });
+  onFrame();
+
+  /* Split section titles into masked words that rise in. */
+  document.querySelectorAll('.title').forEach(t => {
+    let i = 0;
+    const walk = node => [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.append(' '); return; }
+          const w = document.createElement('span'); w.className = 'w';
+          const inner = document.createElement('span'); inner.textContent = part; inner.style.setProperty('--i', i++);
+          w.append(inner); frag.append(w);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && n.tagName !== 'BR') walk(n);
+    });
+    walk(t);
+    t.classList.add('split', 'reveal');
+    io.observe(t);
+  });
+
+  if (fine && !reduce) {
+    /* Custom cursor: dot follows exactly, ring eases behind. */
+    const cur = document.getElementById('cursor');
+    const dot = cur.querySelector('.cursor-dot'), ring = cur.querySelector('.cursor-ring');
+    root.classList.add('has-cursor');
+    let mx = -100, my = -100, rx = mx, ry = my;
+    addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px)`; }, { passive: true });
+    addEventListener('pointerdown', () => cur.classList.add('down'));
+    addEventListener('pointerup', () => cur.classList.remove('down'));
+    document.addEventListener('pointerover', e => cur.classList.toggle('hover', !!e.target.closest('a, button, [data-tilt]')));
+    document.documentElement.addEventListener('mouseleave', () => { cur.style.opacity = 0; });
+    document.documentElement.addEventListener('mouseenter', () => { cur.style.opacity = 1; });
+    (function follow() {
+      rx += (mx - rx) * .18; ry += (my - ry) * .18;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      requestAnimationFrame(follow);
+    })();
+
+    /* Magnetic buttons. */
+    document.querySelectorAll('[data-magnetic]').forEach(b => {
+      b.addEventListener('pointermove', e => {
+        const r = b.getBoundingClientRect();
+        b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .25}px, ${(e.clientY - r.top - r.height / 2) * .35}px)`;
+      });
+      b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+    });
+
+    /* Final CTA glow follows the pointer. */
+    const cta = document.querySelector('.cta-final');
+    if (cta) cta.addEventListener('pointermove', e => {
+      const r = cta.getBoundingClientRect();
+      cta.style.setProperty('--gx', `${e.clientX - r.left}px`); cta.style.setProperty('--gy', `${e.clientY - r.top}px`);
+    });
+  }
 })();

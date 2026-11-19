@@ -27,9 +27,9 @@ Seguimiento general en el issue #1.
 
 ### Motion graphics
 - [x] Escaparate de StarOptimizer con scroll fijado (*sticky*): al bajar, cambian las pantallas (Inicio → Análisis → Plan → Limpieza). Las capturas `so-plan.webp` y `so-limpieza.webp` ya están en `assets/img/`.
-- [ ] Transición de entrada (preloader corto con Nova abriendo los ojos), sin pasar de 1 s.
-- [ ] Cursor personalizado y botones «magnéticos» (solo con puntero fino).
-- [ ] Marquesina o cinta de principios entre secciones.
+- [x] Transición de entrada (preloader corto con Nova abriendo los ojos), sin pasar de 1 s.
+- [x] Cursor personalizado y botones «magnéticos» (solo con puntero fino).
+- [x] Marquesina o cinta de principios entre secciones.
 - [ ] Vídeo corto o GIF de StarOptimizer analizando (grabar desde la app).
 
 ### Calidad
