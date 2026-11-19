@@ -17,25 +17,97 @@
   }), { threshold: .15, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* Nova: eyes follow the pointer, body tilts slightly. */
+  /* Nova, same behaviour as in the app: spring gaze, head follows the eyes,
+     real blinks with lids, idle glances, curious tilt, little hops, squish on click. */
   const nova = document.getElementById('nova');
-  if (nova && fine && !reduce) {
-    const eyes = nova.querySelector('.nova-eyes');
-    const body = nova.querySelector('.nova-body');
-    let pending = false, px = 0, py = 0;
-    addEventListener('pointermove', e => {
-      px = e.clientX; py = e.clientY;
-      if (pending) return; pending = true;
-      requestAnimationFrame(() => {
-        pending = false;
-        const r = nova.getBoundingClientRect();
-        const dx = Math.max(-1, Math.min(1, (px - (r.left + r.width / 2)) / (innerWidth / 2)));
-        const dy = Math.max(-1, Math.min(1, (py - (r.top + r.height / 2)) / (innerHeight / 2)));
-        eyes.style.setProperty('--ex', `${dx * 9}%`);
-        eyes.style.setProperty('--ey', `${dy * 8}%`);
-        body.style.setProperty("--hx", `${50 - dx * 14}%`); body.style.setProperty("--hy", `${18 - dy * 10}%`);
+  if (nova) {
+    const space = document.getElementById('nova-space');
+    const eyes = [...nova.querySelectorAll('.eye')], lids = [...nova.querySelectorAll('.nova-lid')];
+    const face = nova.querySelector('.face'), mascot = nova.querySelector('.mascot');
+    const SPRING = 'linear(0, .22 6%, .6 14%, .9 23%, 1.05 31%, 1.1 37%, 1.08 44%, 1.03 53%, .99 64%, .99 76%, 1)';
+    const GENTLE = 'linear(0, .18 8%, .52 18%, .82 30%, .98 42%, 1.03 52%, 1.02 64%, 1)';
+    let onScreen = true, frame = 0, target = { x: 0, y: 0, m: {} }, pointerUntil = 0, lastLook = -1, blinkN = 0, lookT, blinkT;
+    const ok = () => onScreen && !document.hidden && !reduce;
+    const play = (el, k, o) => el.animate ? el.animate(k, o) : null;
+    const set = (k, v) => nova.style.setProperty(k, v);
+
+    function gaze(x, y, m = {}) {
+      target = { x, y, m };
+      if (!ok() || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        let { x, y, m } = target;
+        if (m.pointer) {
+          const r = nova.getBoundingClientRect();
+          x = Math.max(-16, Math.min(16, (x - r.left - r.width / 2) / 18));
+          y = Math.max(-10, Math.min(10, (y - r.top - r.height / 2) / 22));
+        }
+        const d = m.duration ?? 760;
+        set('--gaze-duration', `${d}ms`); set('--gaze-easing', m.easing ?? SPRING);
+        set('--gaze-x', `${x}px`); set('--gaze-y', `${y}px`);
+        set('--head-duration', `${Math.round(d * 1.45)}ms`); set('--head-easing', GENTLE);
+        set('--head-x', `${(x * .55).toFixed(2)}px`); set('--head-y', `${(y * .7 - 2).toFixed(2)}px`);
+        set('--head-turn', `${(x * .45).toFixed(2)}deg`); set('--eye-depth', `${1 + x * .005}`);
       });
-    }, { passive: true });
+    }
+    function blink(double) {
+      if (!ok()) return;
+      const duration = blinkN++ % 3 === 2 ? 720 : 360;
+      const run = () => {
+        eyes.forEach(e => play(e, [
+          { scale: '1 1', translate: '0 0', easing: 'cubic-bezier(.4,0,.7,1)' },
+          { scale: '1 .4', translate: '0 18px', offset: .36 },
+          { scale: '1 .4', translate: '0 18px', offset: .53, easing: 'cubic-bezier(.16,1,.3,1)' },
+          { scale: '1 1', translate: '0 0' }], { duration }));
+        lids.forEach(l => play(l, [
+          { transform: 'translateY(-110%)', easing: 'cubic-bezier(.4,0,.7,1)' },
+          { transform: 'translateY(-5%)', offset: .36 },
+          { transform: 'translateY(-5%)', offset: .53, easing: 'cubic-bezier(.16,1,.3,1)' },
+          { transform: 'translateY(-110%)' }], { duration }));
+      };
+      run(); if (double) setTimeout(run, duration + 120);
+    }
+    function scheduleBlink() {
+      clearTimeout(blinkT);
+      blinkT = setTimeout(() => { blink(Math.random() < .2); scheduleBlink(); }, 3200 + Math.random() * 3800);
+    }
+    const curious = () => play(face, [{ rotate: '0deg' }, { rotate: '-7deg', offset: .35 }, { rotate: '-7deg', offset: .7 }, { rotate: '0deg' }], { duration: 1500, easing: 'cubic-bezier(.45,0,.55,1)'});
+    const hop = (h = 10) => play(mascot, [
+      { translate: '0 0', scale: '1 1' }, { translate: '0 2px', scale: '1.05 .95', offset: .16 },
+      { translate: `0 -${h}px`, scale: '.97 1.04', offset: .45 }, { translate: '0 1px', scale: '1.04 .96', offset: .78 },
+      { translate: '0 0', scale: '1 1' }], { duration: 640, easing: 'cubic-bezier(.33,0,.25,1)' });
+    const looks = [
+      { x: -15, y: -4, d: 820, hold: 2250 }, { x: -10, y: 7, d: 700, hold: 1700, tilt: true },
+      { x: 12, y: -10, d: 900, hold: 2380 }, { x: 16, y: 3, d: 760, hold: 1900, hop: true },
+      { x: 5, y: 8, d: 640, hold: 1450 }, { x: 0, y: 0, d: 980, hold: 2600, tilt: true }];
+    function scheduleLook(delay = 1500) {
+      clearTimeout(lookT);
+      lookT = setTimeout(() => {
+        if (!ok()) return scheduleLook(1500);
+        if (performance.now() < pointerUntil) return scheduleLook(pointerUntil - performance.now());
+        let n; do { n = Math.floor(Math.random() * looks.length); } while (n === lastLook);
+        lastLook = n; const l = looks[n];
+        gaze(l.x, l.y, { duration: l.d });
+        if (l.tilt) curious();
+        if (l.hop && Math.random() < .6) hop(8);
+        scheduleLook(l.hold);
+      }, delay);
+    }
+    if (!reduce) {
+      if (fine) addEventListener('pointermove', e => {
+        pointerUntil = performance.now() + 3600;
+        gaze(e.clientX, e.clientY, { duration: 520, pointer: true });
+      }, { passive: true });
+      nova.addEventListener('click', () => {
+        play(mascot, [{ scale: '1 1' }, { scale: '1.09 .9', offset: .22 }, { scale: '.97 1.04', offset: .55 }, { scale: '1 1' }], { duration: 560, easing: 'cubic-bezier(.33,0,.25,1)' });
+        space.classList.add('happy'); setTimeout(() => space.classList.remove('happy'), 900);
+        setTimeout(() => { hop(14); blink(); }, 380);
+      });
+      new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(nova);
+      /* Wakes up after the preloader: a hop and a look at the visitor. */
+      setTimeout(() => { hop(10); gaze(0, 4, { duration: 600 }); }, 1300);
+      scheduleBlink(); scheduleLook(2600);
+    }
   }
 
   /* 3D tilt on product visuals. */
